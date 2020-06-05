@@ -16,7 +16,7 @@ CREATE TABLE roles (
     salary DECIMAL,
     department_id INTEGER,
     PRIMARY KEY (id)
-)
+);
 
 CREATE TABLE employees (
     id INTEGER AUTO_INCREMENT,
@@ -25,4 +25,33 @@ CREATE TABLE employees (
     role_id INTEGER,
     manager_id INTEGER,
     PRIMARY KEY (id)
-)
+);
+
+INSERT INTO departments (department_name)
+VALUES ("HR");
+
+INSERT INTO departments (department_name)
+VALUES ("Legal");
+
+INSERT INTO departments (department_name)
+VALUES ("Sales");
+
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES ("John", "Smith", 1, 1);
+
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES ("Sue", "Morris", 2, 4);
+
+INSERT INTO employees (first_name, last_name, role_id, manager_id)
+VALUES ("Steve", "Martin", 3, 7);
+
+INSERT INTO roles (title, salary, department_id)
+VALUES ("HR Director", 80000.00, 1);
+
+INSERT INTO roles (title, salary, department_id)
+VALUES ("Lawyer", 120000.00, 2);
+
+INSERT INTO roles (title, salary, department_id)
+VALUES ("Marketing Exec", 70000.00, 3);
+
+SELECT * FROM employees
