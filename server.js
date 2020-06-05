@@ -2,26 +2,26 @@ const mysql = require("mysql");
 const inquirer = require("inquirer");
 const cTable = require("console.table");
 
-// const connection = mysql.createConnection({
-//   host: "localhost",
+const connection = mysql.createConnection({
+  host: "localhost",
 
-//   // Your port; if not 3306
-//   port: 3306,
+  // Your port; if not 3306
+  port: 3306,
 
-//   // Your username
-//   user: "root",
+  // Your username
+  user: "root",
 
-//   // Your password
-//   password: "rootroot",
-//   database: "employee_db",
-// });
+  // Your password
+  password: "rootroot",
+  database: "employee_db",
+});
 
-// connection.connect(function (err) {
-//   if (err) throw err;
-//   console.log("connected as id " + connection.threadId);
-//   startApp();
-// });
-startApp();
+connection.connect(function (err) {
+  if (err) throw err;
+  console.log("connected as id " + connection.threadId);
+  startApp();
+});
+// startApp();
 function startApp() {
   inquirer
     .prompt({
@@ -40,29 +40,33 @@ function startApp() {
       ],
     })
     .then(function (answer) {
-      if ("View all department") {
-        viewAllDepartments();
-      }
-      if ("View all roles") {
-        viewAllRoles();
-      }
-      if ("View all employees") {
-        viewAllEmployees();
-      }
-      if ("Add department") {
-        addDepartment();
-      }
-      if ("Add role") {
-        addRole();
-      }
-      if ("Add employee") {
-        addEmployee();
-      }
-      if ("Update employee role") {
-        updateEmployeeRole();
-      }
-      if ("EXIT") {
-        connection.end();
+      switch (answer.mainMenu) {
+        case "View all departments":
+          viewAllDepartments();
+          break;
+        case "View all roles":
+          viewAllRoles();
+          break;
+        case "View all employees":
+          viewAllEmployees();
+          break;
+          case "Add department":
+            addDepartment();
+            break;
+          case "Add role":
+            addRole();
+            break;
+        case "Add employee":
+          addEmployee();
+          break;
+        case "Update employee role":
+          updateEmployeeRole();
+          break;
+        case "EXIT":
+          endApp();
+          break;
+        default:
+          break;
       }
     });
 }
@@ -133,8 +137,8 @@ function addEmployee() {
 
 function viewAllDepartments() {
   // code to view department
-  var query = "SELECT * FROM departments";
-  connection.query(query, function (err, res) {
+
+  connection.query("SELECT * FROM departments", function (err, res) {
     if (err) throw err;
     console.log(res.length + " departments found!");
     console.table("All Departments:", res);
@@ -144,19 +148,18 @@ function viewAllDepartments() {
 
 function viewAllRoles() {
   var query = "SELECT * FROM roles";
-  connection
+  connection;
   // code to view all roles
 }
 
 function viewAllEmployees() {
-  var query = "SELECT * FROM employees";
-  connection.query(query, function (err, res) {
+  connection.query("SELECT * FROM employees", function (err, res) {
     if (err) throw err;
     console.log(res.length + " employees found!");
     console.table("All Employees:", res);
-    startApp();
   });
   // code to view all employees
+  startApp();
 }
 
 function updateEmployeeRole() {

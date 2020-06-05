@@ -53,5 +53,3 @@ VALUES ("Lawyer", 120000.00, 2);
 
 INSERT INTO roles (title, salary, department_id)
 VALUES ("Marketing Exec", 70000.00, 3);
-
-SELECT * FROM employees
