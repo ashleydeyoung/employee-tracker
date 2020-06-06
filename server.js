@@ -1,6 +1,7 @@
 const mysql = require("mysql");
 const inquirer = require("inquirer");
-const cTable = require("console.table");
+const cTable = require('console.table');
+
 
 const connection = mysql.createConnection({
   host: "localhost",
@@ -87,7 +88,7 @@ function addDepartment() {
       connection.query("SELECT * FROM departments", function (err, res) {
         if (err) throw err;
         console.log(res.length + " departments found!");
-        console.table("All Departments:", res);
+        console.table(res);
         startApp();
       });
     });
@@ -104,16 +105,28 @@ function addRole() {
       {
         type: "input",
         message: "What is the salary for this role?",
-        name: "salary",
+        name: "salaryAdd",
       },
       {
-        type: "input",
+        type: "list",
         message: "What is the name of the department for this role?",
         name: "departmentRole",
+        //get choices from department table from db
+        choices: []
       }
     )
     .then(function (answer) {
       //code here to add role
+      connection.query("INSERT INTO roles SET ?", {
+        title: answer.roleAdd,
+        salary: answer.salaryAdd,
+        department_id: departmentRole
+      }), 
+      function(err, res) {
+        if(err) throw err;
+        console.log("New role has been saved!")
+        startApp();
+      }
     });
 }
 function addEmployee() {
@@ -151,7 +164,7 @@ function viewAllDepartments() {
   connection.query("SELECT * FROM departments", function (err, res) {
     if (err) throw err;
     console.log(res.length + " departments found!");
-    console.table("All Departments:", res);
+    console.table(res);
     startApp();
   });
 }
@@ -160,7 +173,7 @@ function viewAllRoles() {
   connection.query("SELECT * FROM roles", function (err, res) {
     if (err) throw err;
     console.log(res.length + " roles found!");
-    console.table("All roles:", res);
+    console.table(res);
     startApp();
   });
   // code to view all roles
@@ -170,7 +183,7 @@ function viewAllEmployees() {
   connection.query("SELECT * FROM employees", function (err, res) {
     if (err) throw err;
     console.log(res.length + " employees found!");
-    console.table("All Employees:", res);
+    console.table(res);
     startApp();
   });
   // code to view all employees
@@ -183,10 +196,23 @@ function updateEmployeeRole() {
       message: "Which employee would you like to update?",
       name: "updateRole",
       choices: [
-        /*pull from db*/
+        /*pull from roles table*/
       ],
+    },
+    {
+      type: "input",
+      message: "What is the salary for this new role?",
+      name: "newSalary",
+    }, 
+    {
+      type: "list",
+      message: "Which department is this new role in?",
+      name: "updateDept",
+      choices: [
+        //pulls from dept table
+      ]
     })
     .then(function (answer) {
-      console.log("code to select employee");
+      console.log("");
     });
 }
