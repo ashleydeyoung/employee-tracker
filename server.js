@@ -50,12 +50,12 @@ function startApp() {
         case "View all employees":
           viewAllEmployees();
           break;
-          case "Add department":
-            addDepartment();
-            break;
-          case "Add role":
-            addRole();
-            break;
+        case "Add department":
+          addDepartment();
+          break;
+        case "Add role":
+          addRole();
+          break;
         case "Add employee":
           addEmployee();
           break;
@@ -63,7 +63,7 @@ function startApp() {
           updateEmployeeRole();
           break;
         case "EXIT":
-          endApp();
+          connection.end();
           break;
         default:
           break;
@@ -79,7 +79,17 @@ function addDepartment() {
       name: "deptAdd",
     })
     .then(function (answer) {
-      //code here to add department
+      //code to add department
+      connection.query("INSERT INTO departments SET ?", {
+        department_name: answer.deptAdd,
+      });
+      //code here to view department
+      connection.query("SELECT * FROM departments", function (err, res) {
+        if (err) throw err;
+        console.log(res.length + " departments found!");
+        console.table("All Departments:", res);
+        startApp();
+      });
     });
 }
 
@@ -147,8 +157,12 @@ function viewAllDepartments() {
 }
 
 function viewAllRoles() {
-  var query = "SELECT * FROM roles";
-  connection;
+  connection.query("SELECT * FROM roles", function (err, res) {
+    if (err) throw err;
+    console.log(res.length + " roles found!");
+    console.table("All roles:", res);
+    startApp();
+  });
   // code to view all roles
 }
 
@@ -157,9 +171,9 @@ function viewAllEmployees() {
     if (err) throw err;
     console.log(res.length + " employees found!");
     console.table("All Employees:", res);
+    startApp();
   });
   // code to view all employees
-  startApp();
 }
 
 function updateEmployeeRole() {
