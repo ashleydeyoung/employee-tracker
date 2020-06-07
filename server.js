@@ -95,38 +95,52 @@ function addDepartment() {
 }
 
 function addRole() {
+  let choicesArr = []; 
+  connection.query("SELECT * FROM departments", function(err, res) {
+    if (err) throw err;
+    for (let i = 0; i < res.length; i++) {
+      choicesArr.push(res[i].department_name)
+      
+    }
+    return res;
+  });
+
   inquirer
-    .prompt(
+    .prompt([
       {
         type: "input",
         message: "What role would you like to add?",
-        name: "roleAdd",
+        name: "roleAdd"
       },
       {
         type: "input",
         message: "What is the salary for this role?",
-        name: "salaryAdd",
+        name: "salaryAdd"
       },
       {
         type: "list",
         message: "What is the name of the department for this role?",
         name: "departmentRole",
-        //get choices from department table from db
-        choices: []
+        //get choices from department table from dept name array
+        choices: choicesArr
       }
-    )
-    .then(function (answer) {
+    ])
+    .then(function (data) {
       //code here to add role
-      connection.query("INSERT INTO roles SET ?", {
-        title: answer.roleAdd,
-        salary: answer.salaryAdd,
-        department_id: departmentRole
-      }), 
-      function(err, res) {
-        if(err) throw err;
-        console.log("New role has been saved!")
-        startApp();
+      if (data.departmentRole === res.department_name) {
+        console.log("yessss")
       }
+        console.log(data)
+      // connection.query("INSERT INTO roles SET ?", {
+      //   title: answer.roleAdd,
+      //   salary: answer.salaryAdd,
+      //   department_id: departmentRole
+      // }), 
+      // function(err, res) {
+      //   if(err) throw err;
+      //   console.log("New role has been saved!")
+      //   startApp();
+      // })
     });
 }
 function addEmployee() {
