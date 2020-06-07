@@ -102,7 +102,6 @@ function addRole() {
       choicesArr.push(res[i].department_name)
       
     }
-    return res;
   });
 
   inquirer
@@ -127,25 +126,42 @@ function addRole() {
     ])
     .then(function (data) {
       //code here to add role
-      if (data.departmentRole === res.department_name) {
-        console.log("yessss")
-      }
-        console.log(data)
+      connection.query(
+        `INSERT INTO roles(title, salary, department_id) 
+        VALUES
+        ("${data.roleAdd}", "${data.salaryAdd}", 
+        (SELECT id FROM departments WHERE department_name = "${data.departmentRole}"));`
+    )
+
       // connection.query("INSERT INTO roles SET ?", {
       //   title: answer.roleAdd,
       //   salary: answer.salaryAdd,
       //   department_id: departmentRole
       // }), 
-      // function(err, res) {
+      // function(err, res) 
       //   if(err) throw err;
       //   console.log("New role has been saved!")
-      //   startApp();
+        startApp();
       // })
     });
 }
 function addEmployee() {
+  let roleArr = []; 
+  let managerArr = [];
+  connection.query("SELECT * FROM employees", function(err, res) {
+    if (err) throw err;
+    for (let i = 0; i < res.length; i++) {
+      managerArr.push(res[i].manager_id)
+    }
+  });
+  connection.query("SELECT * FROM roles", function(err, res) {
+    if (err) throw err;
+    for (let i = 0; i < res.length; i++) {
+      roleArr.push(res[i].title)
+    }
+  
   inquirer
-    .prompt(
+    .prompt([
       {
         type: "input",
         message: "What is the employee's first name?",
@@ -157,19 +173,23 @@ function addEmployee() {
         name: "lastName",
       },
       {
-        type: "input",
+        type: "list",
         message: "What is the employee's role?",
         name: "employeeRole",
+        choices: roleArr
       },
       {
-        type: "input",
-        message: "Who is the employee's manager?",
+        type: "list",
+        message: "What is the employee's manager id?",
         name: "employeeManager",
+        choices: managerArr
       }
-    )
+    ])
     .then(function (answer) {
+    
       //code here to add employee
     });
+  });
 }
 
 function viewAllDepartments() {
