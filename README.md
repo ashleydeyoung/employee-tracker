@@ -40,28 +40,19 @@ So that I can organize and plan my business
   node server.js
   ``` 
   
-  Following the command, the user will be instructed to answer questions regarding their project. Following the last question, the data input is written in the generate README file and the user is notifed.
+  Following the command, the user will be given options to perform
 
 
-  ![Command line success preview](Assets/success-preview.png)
+  ![Command line success preview](Assets/images/start-screen.png)
   
 
-  The user can now view the generated README file by running the following command:
-
-  ```
-  code .
-  ``` 
-
+  The user can now view, add, or update information.
 
   
   ## Demo of Application
-  ![Command line questions Preview](Assets/questions-preview.gif)
+  ![Command line questions Preview](Assets/images/employee-tracker.gif)
 
-  *demo of command to run application and generated questions*
-
-  ![Generated README Preview](Assets/generated-README.gif)
-  
-  *demo of generated README from command line*
+  *demo of command to run application and generated database information*
 
 
   ## Questions

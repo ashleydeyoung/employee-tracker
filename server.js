@@ -71,6 +71,7 @@ function startApp() {
     });
 }
 
+// Adds new department
 function addDepartment() {
   inquirer
     .prompt({
@@ -129,82 +130,86 @@ function addRole() {
             newId = res[j].id;
           }
         }
+        //adding new role
         connection.query(
           "INSERT INTO roles SET ?",
           {
             title: data.roleAdd,
             salary: data.salaryAdd,
             department_id: newId,
-          },
-          function (err, res) {
+          }
+        )
+        //code to view roles
+          connection.query("SELECT * FROM roles", function (err, res) {
             if (err) throw err;
-            console.log("New role has been saved!");
+            console.log(res.length + " roles found!");
+            console.table(res);
+
+            startApp();
+      });
+  
+    })
+
+})
+}
+
+function addEmployee() {
+  let roleArr = [];
+  connection.query("SELECT * FROM roles", function (err, res) {
+    if (err) throw err;
+    for (let i = 0; i < res.length; i++) {
+      roleArr.push(res[i].title);
+    }
+
+    inquirer
+      .prompt([
+        {
+          type: "input",
+          message: "What is the employee's first name?",
+          name: "firstName",
+        },
+        {
+          type: "input",
+          message: "What is the employee's last name?",
+          name: "lastName",
+        },
+        {
+          type: "list",
+          message: "What is the employee's role?",
+          name: "employeeRole",
+          choices: roleArr,
+        },
+        {
+          type: "input",
+          message: "What is the employee's manager id?",
+          name: "employeeManager",
+        },
+      ])
+      .then(function (answer) {
+        console.log("it worked");
+        let newRoleId;
+        for (let j = 0; j < res.length; j++) {
+          if (res[j].title == answer.employeeRole) {
+            newRoleId = res[j].id;
+          }
+        }
+        //code here to add employee
+        connection.query(
+          "INSERT INTO employees SET ?",
+          {
+            first_name: answer.firstName,
+            last_name: answer.lastName,
+            role_id: newRoleId,
+            manager_id: answer.employeeManager,
+          },
+          function (err) {
+            if (err) throw err;
+            console.log("Your employee has been added!");
             startApp();
           }
         );
       });
   });
-}
-
-
-function addEmployee() {
-  let roleArr = [];
-    connection.query("SELECT * FROM roles", function (err, res) {
-      if (err) throw err;
-      for (let i = 0; i < res.length; i++) {
-        roleArr.push(res[i].title);
-      }
-
-      inquirer
-        .prompt([
-          {
-            type: "input",
-            message: "What is the employee's first name?",
-            name: "firstName",
-          },
-          {
-            type: "input",
-            message: "What is the employee's last name?",
-            name: "lastName",
-          },
-          {
-            type: "list",
-            message: "What is the employee's role?",
-            name: "employeeRole",
-            choices: roleArr,
-          },
-          {
-            type: "input",
-            message: "What is the employee's manager id?",
-            name: "employeeManager"
-          },
-        ])
-        .then(function (answer) {
-          console.log("it worked")
-          let newRoleId;
-          for (let j = 0; j < res.length; j++) {
-            if (res[j].title == answer.employeeRole) {
-              newRoleId = res[j].id;
-              console.log(newRoleId);
-            }
-          }
-          //code here to add employee
-          connection.query(
-            "INSERT INTO employees SET ?",
-            {
-              first_name: answer.firstName,
-              last_name: answer.lastName,
-              role_id: newRoleId,
-              manager_id: answer.employeeManager,
-            },
-            function (err) {
-              if (err) throw err;
-              console.log("Your employee has been added!");
-              startApp();
-            }
-          );
-        });
-    });
 }
 
 function viewAllDepartments() {
@@ -238,32 +243,61 @@ function viewAllEmployees() {
   // code to view all employees
 }
 
+
+
+let roleArray = []
+async function getRoles() {
+  connection.query("SELECT * FROM roles", function (err, res) {
+    if (err) throw err;
+    for (let i = 0; i < res.length; i++) {
+      roleArray.push(`${res[i].id} ${res[i].title}`);
+    }
+})
+}
 function updateEmployeeRole() {
+  getRoles()
+  let employeeArray = [];
+  connection.query("SELECT * FROM employees", function(err, res) {
+    // console.log(res);
+    for (let i = 0; i < res.length; i++) {
+      employeeArray.push(`${res[i].id} ${res[i].first_name} ${res[i].last_name}`);
+    }
   inquirer
-    .prompt(
+    .prompt([
       {
         type: "list",
         message: "Which employee would you like to update?",
-        name: "updateRole",
-        choices: [
-          /*pull from roles table*/
-        ],
-      },
-      {
-        type: "input",
-        message: "What is the salary for this new role?",
-        name: "newSalary",
+        name: "selectEmployee",
+        choices: employeeArray
       },
       {
         type: "list",
-        message: "Which department is this new role in?",
-        name: "updateDept",
-        choices: [
-          //pulls from dept table
-        ],
+        message: "Select new role",
+        name: "updateRole",
+        choices: roleArray
       }
-    )
+    ])
     .then(function (answer) {
-      console.log("");
+      console.log(`Great, you'd like to update ${answer.selectEmployee}`);
+      console.log(answer.updateRole.split(" ")[0], answer.selectEmployee.split(" ")[0]);
+
+      connection.query(
+        "UPDATE employees SET ? WHERE ?",
+        [
+          {
+            role_id: answer.updateRole.split(" ")[0]
+          },
+          {
+            id: answer.selectEmployee.split(" ")[0]
+          }
+        ],
+        function(err, res) {
+          if (err) throw err;
+          console.log("Employee Updated");
+          // Call deleteProduct AFTER the UPDATE completes
+          startApp()
+        }
+      );
     });
+})
 }
